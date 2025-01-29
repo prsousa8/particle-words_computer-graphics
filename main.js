@@ -24,17 +24,60 @@ function getRandomColor() {
     return new THREE.Color(Math.random(), Math.random(), Math.random());
 }
 
-// Carregar fonte e criar partículas
+let particles = [];
+let particleGeometries = [];
+let particleMaterials = [];
+let word = "PPGEEC";
+let fontLoaded = null;
+
+// Criar input para digitar a palavra
+const inputElement = document.createElement("input");
+inputElement.type = "text";
+inputElement.value = word;
+inputElement.style.position = "absolute";
+inputElement.style.top = "20px";
+inputElement.style.left = "20px";
+inputElement.style.padding = "5px";
+inputElement.style.fontSize = "16px";
+document.body.appendChild(inputElement);
+
+// Criar botão para gerar as partículas
+const buttonElement = document.createElement("button");
+buttonElement.textContent = "Gerar Partículas";
+buttonElement.style.position = "absolute";
+buttonElement.style.top = "60px";
+buttonElement.style.left = "20px";
+document.body.appendChild(buttonElement);
+
+// Atualizar a palavra ao digitar
+inputElement.addEventListener("input", (event) => {
+    word = event.target.value;
+});
+
+// Função para carregar a fonte e criar as partículas
 const fontLoader = new FontLoader();
 fontLoader.load("https://threejs.org/examples/fonts/optimer_regular.typeface.json", (font) => {
-    const letters = "PPGEEC"; // Palavra pode ser dinâmica, basta mudar essa variável
-    const spacing = 10; // Ajuste do espaçamento entre letras
-    let totalWidth = 0; // Largura total da palavra
+    fontLoaded = font;
+});
+
+// Função para criar partículas para a palavra
+function updateParticles() {
+    // Limpa partículas antigas
+    particles.forEach(p => scene.remove(p));
+    particles = [];
+    particleGeometries = [];
+    particleMaterials = [];
+
+    if (!word || !fontLoaded) return;
+
+    const letters = word;
+    const spacing = 10;
+    let totalWidth = 0;
 
     // Calcular a largura total da palavra
     for (let i = 0; i < letters.length; i++) {
         const textGeometry = new TextGeometry(letters[i], {
-            font: font,
+            font: fontLoaded,
             size: 12,
             height: 1,
             curveSegments: 12,
@@ -45,10 +88,9 @@ fontLoader.load("https://threejs.org/examples/fonts/optimer_regular.typeface.jso
 
     let currentPosX = -totalWidth / 2;
 
-    // Criar partículas para cada letra com base na largura total da palavra
     for (let i = 0; i < letters.length; i++) {
         const textGeometry = new TextGeometry(letters[i], {
-            font: font,
+            font: fontLoaded,
             size: 12,
             height: 1,
             curveSegments: 12,
@@ -56,25 +98,17 @@ fontLoader.load("https://threejs.org/examples/fonts/optimer_regular.typeface.jso
 
         textGeometry.computeBoundingBox();
         const letterWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
-
-        // Centralizar as letras
         currentPosX += letterWidth / 2;
 
         const letterPoints = textGeometry.getAttribute("position").array;
         const letterColor = getRandomColor();
 
-        // Criar partículas para cada letra
         createParticles(letterPoints, letterColor, currentPosX, i, spacing);
-
-        // Ajustar a posição X para a próxima letra
         currentPosX += letterWidth / 2 + spacing;
     }
-});
+}
 
-let particles = [];
-let particleGeometries = [];
-let particleMaterials = [];
-
+// Função para criar partículas para uma letra
 function createParticles(letterPoints, color, posX, letterIndex, spacing) {
     const particleCount = letterPoints.length / 3;
     const particleGeometry = new THREE.BufferGeometry();
@@ -83,17 +117,14 @@ function createParticles(letterPoints, color, posX, letterIndex, spacing) {
     const randomOffsets = new Float32Array(particleCount * 3);
 
     for (let i = 0; i < particleCount; i++) {
-        // Atribuindo posições aleatórias para dispersão inicial
         startPositions[i * 3] = (Math.random() - 0.5) * 200;
         startPositions[i * 3 + 1] = (Math.random() - 0.5) * 200;
         startPositions[i * 3 + 2] = (Math.random() - 0.5) * 50;
 
-        // Movendo as partículas para as posições das letras
         targetPositions[i * 3] = letterPoints[i * 3] + posX;
         targetPositions[i * 3 + 1] = letterPoints[i * 3 + 1];
         targetPositions[i * 3 + 2] = letterPoints[i * 3 + 2];
 
-        // Criando valores de deslocamento aleatório para o movimento contínuo
         randomOffsets[i * 3] = (Math.random() - 0.5) * 0.2;
         randomOffsets[i * 3 + 1] = (Math.random() - 0.5) * 0.2;
         randomOffsets[i * 3 + 2] = (Math.random() - 0.5) * 0.2;
@@ -123,10 +154,7 @@ function animate() {
         const randomOffsetArray = particleGeometries[i].attributes.randomOffset.array;
 
         for (let j = 0; j < posArray.length; j++) {
-            // Movendo as partículas em direção às posições das letras
             posArray[j] += (targetArray[j] - posArray[j]) * 0.03;
-
-            // Movendo as partículas aleatoriamente para criar o movimento contínuo
             posArray[j] += Math.sin(Date.now() * 0.001 + randomOffsetArray[j] * 10) * 0.1;
         }
 
@@ -136,7 +164,13 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-// Ajuste da tela ao redimensionar
+// Gerar partículas ao pressionar o botão
+buttonElement.addEventListener("click", () => {
+    if (fontLoaded) {
+        updateParticles();
+    }
+});
+
 window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
