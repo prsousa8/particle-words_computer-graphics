@@ -31,17 +31,26 @@ Você pode incluir o Three.js diretamente em seu projeto HTML através de um lin
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Three.js Example</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Three.js</title>
+	<link rel="stylesheet" href="./main.css">
+	<script type="importmap">
+		{
+		  "imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.module.js",
+			"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/"
+		  }
+		}
+	  </script>
 </head>
 <body>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
-  <script>
-    // Código Three.js aqui
-  </script>
+	<canvas id="three-canvas"></canvas>
+  <script type="module" src="main.js"></script>
 </body>
 </html>
+```
 
 ## Executando o Projeto ⏳
 
