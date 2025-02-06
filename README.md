@@ -83,3 +83,4 @@ Utilize a extensão Live Server do VS Code para rodar o projeto localmente.
 </tr>
 </table>
 
+A equação da reta é dada por $y = mx + b$.
