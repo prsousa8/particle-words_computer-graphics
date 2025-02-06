@@ -82,5 +82,3 @@ Utilize a extensão Live Server do VS Code para rodar o projeto localmente.
   <td align="center"><a href="https://github.com/YasminEmily"><img src="assets/equipe/yasmin.jpeg" width="70%;" alt="Yasmin Emily"/><br /><sub><b>Yasmin Emily</b></sub></a><br/></td>
 </tr>
 </table>
-
-A equação da reta é dada por $y = mx + b$.
