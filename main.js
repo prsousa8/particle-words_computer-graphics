@@ -49,6 +49,14 @@ buttonElement.style.top = "60px";
 buttonElement.style.left = "20px";
 document.body.appendChild(buttonElement);
 
+// Criar botão para captura de áudio
+const audioButton = document.createElement("button");
+audioButton.textContent = "Falar";
+audioButton.style.position = "absolute";
+audioButton.style.top = "100px";
+audioButton.style.left = "20px";
+document.body.appendChild(audioButton);
+
 // Atualizar a palavra ao digitar
 inputElement.addEventListener("input", (event) => {
     word = event.target.value;
@@ -109,8 +117,13 @@ function updateParticles() {
 }
 
 // Função para criar partículas para uma letra
+// Função para criar partículas para uma letra
 function createParticles(letterPoints, color, posX, letterIndex, spacing) {
     const particleCount = letterPoints.length / 3;
+    
+    // Verificar se o array de pontos não está vazio ou indefinido
+    if (letterPoints.length === 0) return;
+
     const particleGeometry = new THREE.BufferGeometry();
     const startPositions = new Float32Array(particleCount * 3);
     const targetPositions = new Float32Array(particleCount * 3);
@@ -145,6 +158,24 @@ function createParticles(letterPoints, color, posX, letterIndex, spacing) {
     animate();
 }
 
+
+// Captura de áudio e conversão para texto
+audioButton.addEventListener("click", () => {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = "pt-BR";
+    recognition.start();
+
+    recognition.onresult = (event) => {
+        word = event.results[0][0].transcript.toUpperCase();
+        inputElement.value = word;
+        updateParticles();
+    };
+
+    recognition.onerror = (event) => {
+        console.error("Erro no reconhecimento de voz:", event.error);
+    };
+});
+
 function animate() {
     requestAnimationFrame(animate);
 
@@ -176,3 +207,5 @@ window.addEventListener("resize", () => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+
