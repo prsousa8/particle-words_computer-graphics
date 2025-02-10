@@ -62,7 +62,7 @@ Para executar o projeto, realize as seguintes etapas:
 - Digite o comando via terminal
 
 ~~~
-git clonehttps://github.com/prsousa8/particle-words_computer-graphics.git
+git clone https://github.com/prsousa8/particle-words_computer-graphics.git
 ~~~
 
 
